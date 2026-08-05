@@ -4,228 +4,488 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>ResQ-link — P2P Emergency Response</title>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
   <style>
     :root {
       --primary: #d946ef;
-      --bg: #fdf4ff;
+      --primary-hover: #c026d3;
+      --primary-gradient: linear-gradient(135deg, #e879f9 0%, #d946ef 50%, #c026d3 100%);
+      --bg: #fdf2f8;
       --card-bg: #ffffff;
-      --text: #374151;
+      --text-main: #1f2937;
+      --text-muted: #6b7280;
+      --border: #fbcfe8;
+      --shadow: 0 10px 25px -5px rgba(217, 70, 239, 0.08), 0 8px 10px -6px rgba(0, 0, 0, 0.04);
     }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif;
+    }
+
     body {
-      font-family: system-ui, -apple-system, sans-serif;
       background-color: var(--bg);
-      color: var(--text);
-      margin: 0;
-      padding: 20px;
+      color: var(--text-main);
+      padding-bottom: 60px;
     }
-    .header {
-      text-align: center;
-      margin-bottom: 20px;
+
+    /* Top Navigation Bar */
+    .navbar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 16px 24px;
+      background: rgba(255, 255, 255, 0.85);
+      backdrop-filter: blur(12px);
+      border-bottom: 1px solid var(--border);
+      position: sticky;
+      top: 0;
+      z-index: 100;
     }
-    .header h1 {
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-weight: 800;
+      font-size: 1.3rem;
       color: var(--primary);
-      margin: 0;
     }
+
+    .nav-links {
+      display: flex;
+      gap: 16px;
+    }
+
+    .nav-links a {
+      text-decoration: none;
+      color: var(--text-muted);
+      font-size: 0.85rem;
+      font-weight: 600;
+      transition: color 0.2s;
+    }
+
+    .nav-links a:hover {
+      color: var(--primary);
+    }
+
+    /* Main Container */
     .container {
-      max-width: 800px;
+      max-width: 900px;
       margin: 0 auto;
+      padding: 24px 16px;
       display: flex;
       flex-direction: column;
-      gap: 20px;
+      gap: 36px;
     }
+
+    /* Section Titles */
+    .section-title {
+      text-align: center;
+      font-size: 1.5rem;
+      font-weight: 800;
+      color: #111827;
+      margin-bottom: 16px;
+    }
+
+    /* Card Box */
     .card {
       background: var(--card-bg);
-      padding: 20px;
-      border-radius: 12px;
-      box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1);
+      border-radius: 20px;
+      padding: 24px;
+      box-shadow: var(--shadow);
+      border: 1px solid rgba(251, 207, 232, 0.5);
     }
-    h2 {
-      margin-top: 0;
-      font-size: 1.2rem;
-      color: #1f2937;
+
+    .card-desc {
+      color: var(--text-muted);
+      font-size: 0.85rem;
+      margin-bottom: 16px;
+      line-height: 1.4;
     }
-    input, textarea, select, button {
+
+    /* Mesh Canvas */
+    .canvas-container {
+      position: relative;
       width: 100%;
-      padding: 10px;
-      margin-top: 8px;
-      border: 1px solid #e5e7eb;
-      border-radius: 6px;
-      box-sizing: border-box;
+      border-radius: 14px;
+      overflow: hidden;
+      background: #0d1117;
+      margin-bottom: 16px;
     }
-    button {
-      background-color: var(--primary);
-      color: white;
-      border: none;
-      font-weight: bold;
-      cursor: pointer;
-      transition: background 0.2s;
-    }
-    button:hover {
-      opacity: 0.9;
-    }
+
     canvas {
       width: 100%;
-      height: 150px;
-      background: #111827;
+      height: 200px;
+      display: block;
+    }
+
+    /* Button Styling */
+    .btn {
+      background: var(--primary-gradient);
+      color: white;
+      border: none;
+      padding: 12px 24px;
+      border-radius: 50px;
+      font-weight: 700;
+      font-size: 0.85rem;
+      cursor: pointer;
+      box-shadow: 0 4px 14px rgba(217, 70, 239, 0.35);
+      transition: all 0.2s ease;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+    }
+
+    .btn:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 6px 20px rgba(217, 70, 239, 0.45);
+    }
+
+    .btn:active {
+      transform: translateY(0);
+    }
+
+    .btn-center {
+      display: flex;
+      justify-content: center;
+    }
+
+    /* Two Column Grid for Triage */
+    .grid-2 {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 20px;
+    }
+
+    @media (max-width: 640px) {
+      .grid-2 {
+        grid-template-columns: 1fr;
+      }
+      .nav-links {
+        display: none;
+      }
+    }
+
+    /* Form Inputs */
+    .form-group {
+      margin-bottom: 14px;
+    }
+
+    label {
+      display: block;
+      font-size: 0.8rem;
+      font-weight: 700;
+      color: #374151;
+      margin-bottom: 6px;
+    }
+
+    input, select, textarea {
+      width: 100%;
+      padding: 10px 14px;
+      border: 1px solid #e5e7eb;
+      border-radius: 10px;
+      font-size: 0.85rem;
+      background: #fafafa;
+      color: #1f2937;
+      transition: all 0.2s;
+    }
+
+    input:focus, select:focus, textarea:focus {
+      outline: none;
+      border-color: var(--primary);
+      background: #ffffff;
+      box-shadow: 0 0 0 3px rgba(217, 70, 239, 0.15);
+    }
+
+    /* Diagnosis Side Box */
+    .diagnosis-box {
+      background: #fdf2f8;
+      border-radius: 12px;
+      padding: 16px;
+      border: 1px dashed var(--border);
+      height: 100%;
+    }
+
+    .diagnosis-box h4 {
+      font-size: 0.9rem;
+      color: #1f2937;
+      margin-bottom: 8px;
+    }
+
+    .diagnosis-box p {
+      font-size: 0.82rem;
+      color: var(--text-muted);
+      line-height: 1.5;
+    }
+
+    /* Command Center Logs */
+    .log-card {
+      background: #ffffff;
+      border-left: 5px solid var(--primary);
       border-radius: 8px;
+      padding: 14px;
+      margin-top: 12px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.04);
     }
-    .log-item {
-      border-left: 4px solid var(--primary);
-      background: #faf5ff;
-      padding: 10px;
-      margin-top: 10px;
-      border-radius: 4px;
+
+    .log-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 6px;
     }
-    .badge-red {
+
+    .badge-critical {
       background: #ef4444;
       color: white;
+      font-size: 0.7rem;
+      font-weight: 800;
       padding: 2px 8px;
-      border-radius: 12px;
-      font-size: 0.8rem;
+      border-radius: 20px;
+    }
+
+    /* Floating Siren Button */
+    .siren-fab {
+      position: fixed;
+      bottom: 20px;
+      right: 20px;
+      width: 50px;
+      height: 50px;
+      background: #ef4444;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: white;
+      box-shadow: 0 4px 15px rgba(239, 68, 68, 0.4);
+      cursor: pointer;
+      border: 2px solid white;
+      z-index: 99;
+      font-size: 1.2rem;
     }
   </style>
-  
-  <!-- Firebase Scripts (Backend Layer) -->
+
+  <!-- Firebase Integration Scripts -->
   <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
   <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
 </head>
 <body>
 
-  <div class="header">
-    <h1>🩷 ResQ-link</h1>
-    <p>Offline-First P2P Emergency Response Network</p>
+  <!-- Top Navbar -->
+  <div class="navbar">
+    <div class="brand">
+      <span>🩷</span> ResQ-link
+    </div>
+    <div class="nav-links">
+      <a href="#mesh">Mesh Visualizer</a>
+      <a href="#triage">AI Triage</a>
+      <a href="#dispatch">SOS Dispatch</a>
+      <a href="#command">Command Center</a>
+    </div>
   </div>
 
   <div class="container">
-    
-    <!-- 1. Canvas Mesh Visualizer -->
-    <div class="card">
-      <h2>Live Peer-to-Peer Mesh Visualizer</h2>
-      <canvas id="meshCanvas"></canvas>
+
+    <!-- 1. Peer-to-Peer Mesh Visualizer -->
+    <div id="mesh">
+      <h2 class="section-title">Live Peer-to-Peer Mesh Visualizer</h2>
+      <div class="card">
+        <p class="card-desc">Real-time P2P signal distribution simulation across active emergency peer devices.</p>
+        <div class="canvas-container">
+          <canvas id="meshCanvas"></canvas>
+        </div>
+        <div class="btn-center">
+          <button class="btn" onclick="addPeerNode()">+ Add Peer Device Node</button>
+        </div>
+      </div>
     </div>
 
-    <!-- 2. AI Triage Calculator -->
-    <div class="card">
-      <h2>Offline AI Medical Triage Calculator</h2>
-      <label>Breathing Condition:</label>
-      <select id="breathing">
-        <option value="Normal">Normal</option>
-        <option value="Severe Distress">Severe Distress / Absent</option>
-      </select>
-      
-      <label>Consciousness Level:</label>
-      <select id="consciousness">
-        <option value="Conscious">Alert / Conscious</option>
-        <option value="Unresponsive">Unresponsive / Fainting</option>
-      </select>
-      
-      <button onclick="calculateTriage()">Compute AI Priority Level</button>
-      <div id="triageResult" style="margin-top:10px; font-weight:bold;"></div>
+    <!-- 2. AI Medical Triage Calculator -->
+    <div id="triage">
+      <h2 class="section-title">Offline AI Medical Triage Calculator</h2>
+      <div class="card">
+        <div class="grid-2">
+          <div>
+            <h4 style="margin-bottom:12px; font-size:0.9rem;">Symptom Evaluator</h4>
+            
+            <div class="form-group">
+              <label>Breathing Condition:</label>
+              <select id="breathing">
+                <option value="Normal">Normal / Mild Difficulty</option>
+                <option value="Severe">Severe Distress / Absent</option>
+              </select>
+            </div>
+
+            <div class="form-group">
+              <label>Consciousness Level:</label>
+              <select id="consciousness">
+                <option value="Alert">Alert & Responsive</option>
+                <option value="Unresponsive">Unresponsive / Fainting</option>
+              </select>
+            </div>
+
+            <div class="form-group">
+              <label>Physical Trauma Status:</label>
+              <select id="trauma">
+                <option value="None">No Major Visible Wounds</option>
+                <option value="Severe">Severe Bleeding / Fractures</option>
+              </select>
+            </div>
+
+            <button class="btn" style="width:100%; margin-top:8px;" onclick="computeTriage()">Compute AI Priority Level</button>
+          </div>
+
+          <div class="diagnosis-box">
+            <h4>Automated Diagnosis</h4>
+            <p id="triageOutput">Select symptom parameters on the left to execute local client-side evaluation.</p>
+          </div>
+        </div>
+      </div>
     </div>
 
     <!-- 3. Emergency SOS Dispatcher -->
-    <div class="card">
-      <h2>Emergency SOS Dispatcher</h2>
-      <input type="text" id="nodeId" placeholder="Sender Name / Node ID (e.g. Node-404, Flat 2A)" />
-      <textarea id="sosMsg" rows="3" placeholder="Emergency Message & Location Details..."></textarea>
-      <button onclick="dispatchSOS()">Relay SOS Over Mesh</button>
+    <div id="dispatch">
+      <h2 class="section-title">Emergency SOS Dispatcher</h2>
+      <div class="card">
+        <div class="form-group">
+          <label>Sender Name / Node ID:</label>
+          <input type="text" id="nodeId" placeholder="e.g., Peer-Node-308" />
+        </div>
+
+        <div class="form-group">
+          <label>Emergency Message & Precise Location Details:</label>
+          <textarea id="sosMsg" rows="3" placeholder="Describe trapped count, water levels, or critical medical needs..."></textarea>
+        </div>
+
+        <button class="btn" style="width:100%;" onclick="relaySOS()">Relay SOS Over Mesh</button>
+      </div>
     </div>
 
-    <!-- 4. Realtime Command Center (Backend Live Stream) -->
-    <div class="card">
-      <h2>Live Responder Command Center</h2>
-      <div id="commandCenterLogs">
-        <p style="color:#6b7280; font-size: 0.9rem;">Waiting for incoming broadcasts...</p>
+    <!-- 4. Live Responder Command Center -->
+    <div id="command">
+      <h2 class="section-title">Live Responder Command Center</h2>
+      <div class="card">
+        <div id="logsContainer">
+          <p style="color:var(--text-muted); font-size:0.85rem; text-align:center;">Waiting for incoming broadcasts...</p>
+        </div>
       </div>
     </div>
 
   </div>
 
+  <!-- Floating Siren Icon -->
+  <div class="siren-fab" onclick="playSiren()" title="Play Emergency Alarm">🚨</div>
+
   <script>
-    // 1. FIREBASE BACKEND SETUP (Realtime Synchronization)
+    // -------------------------------------------------------------
+    // 1. FIREBASE REALTIME BACKEND SETUP
+    // -------------------------------------------------------------
     const firebaseConfig = {
       databaseURL: "https://resq-link-demo-default-rtdb.firebaseio.com"
     };
     firebase.initializeApp(firebaseConfig);
     const database = firebase.database();
 
-    // 2. SOS DISPATCH FUNCTION (Data bhejta hai)
-    function dispatchSOS() {
-      const node = document.getElementById('nodeId').value || "Anonymous Node";
-      const msg = document.getElementById('sosMsg').value || "Emergency SOS Triggered!";
-      
-      if(!msg) {
-        alert("Please write a message!");
+    // -------------------------------------------------------------
+    // 2. SOS DISPATCHER LOGIC (Sends Data Live)
+    // -------------------------------------------------------------
+    function relaySOS() {
+      const node = document.getElementById('nodeId').value.trim() || "Peer-Node-308";
+      const message = document.getElementById('sosMsg').value.trim();
+
+      if (!message) {
+        alert("Please enter emergency details before sending!");
         return;
       }
 
-      // Firebase database mein save karna (Live broadcast to all devices)
       database.ref('sos_alerts').push({
         nodeId: node,
-        message: msg,
-        timestamp: new Date().toLocaleTimeString()
+        message: message,
+        timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' })
       });
 
-      alert("🚨 Distress signal broadcasted across local P2P Mesh nodes!");
+      alert("🚨 Emergency SOS successfully relayed to all connected nodes!");
       document.getElementById('sosMsg').value = "";
     }
 
-    // 3. LIVE RECEIVER (Dost ke phone par real-time update karta hai)
+    // -------------------------------------------------------------
+    // 3. REALTIME LISTENER (Updates Other Devices Instantly)
+    // -------------------------------------------------------------
     database.ref('sos_alerts').on('child_added', (snapshot) => {
       const data = snapshot.val();
-      const logsContainer = document.getElementById('commandCenterLogs');
+      const logs = document.getElementById('logsContainer');
 
-      // Clear default placeholder text
-      if (logsContainer.innerHTML.includes("Waiting for incoming")) {
-        logsContainer.innerHTML = "";
+      if (logs.innerHTML.includes("Waiting for incoming")) {
+        logs.innerHTML = "";
       }
 
-      const logElement = document.createElement('div');
-      logElement.className = 'log-item';
-      logElement.innerHTML = `
-        <div style="display:flex; justify-between; align-items:center;">
-          <strong>ID: ${data.nodeId}</strong>
-          <span class="badge-red">CRITICAL</span>
+      const logItem = document.createElement('div');
+      logItem.className = 'log-card';
+      logItem.innerHTML = `
+        <div class="log-header">
+          <strong style="color:#1f2937; font-size:0.9rem;">Sender: ${data.nodeId}</strong>
+          <span class="badge-critical">CRITICAL</span>
         </div>
-        <p style="margin:5px 0;">${data.message}</p>
-        <small style="color:#6b7280;">Received at: ${data.timestamp}</small>
+        <p style="color:#374151; font-size:0.85rem; margin: 6px 0;">${data.message}</p>
+        <small style="color:#6b7280; font-size:0.75rem;">Received at: ${data.timestamp}</small>
       `;
-      logsContainer.prepend(logElement);
+
+      logs.prepend(logItem);
     });
 
-    // 4. AI TRIAGE LOGIC
-    function calculateTriage() {
-      const b = document.getElementById('breathing').value;
-      const c = document.getElementById('consciousness').value;
-      const resultDiv = document.getElementById('triageResult');
+    // -------------------------------------------------------------
+    // 4. AI TRIAGE CALCULATOR LOGIC
+    // -------------------------------------------------------------
+    function computeTriage() {
+      const breathing = document.getElementById('breathing').value;
+      const consciousness = document.getElementById('consciousness').value;
+      const trauma = document.getElementById('trauma').value;
+      const output = document.getElementById('triageOutput');
 
-      if (b === "Severe Distress" || c === "Unresponsive") {
-        resultDiv.innerHTML = "<span style='color:red;'>CATEGORY RED (IMMEDIATE) - Life Threat Detected!</span>";
+      if (breathing === "Severe" || consciousness === "Unresponsive" || trauma === "Severe") {
+        output.innerHTML = `
+          <div style="color: #dc2626; font-weight: 800; font-size: 0.9rem; margin-bottom: 6px;">CATEGORY RED — IMMEDIATE ATTENTION REQUIRED</div>
+          <p style="color: #b91c1c;">Patient exhibits life-threatening symptoms. Immediate medical evacuation and critical priority status assigned.</p>
+        `;
       } else {
-        resultDiv.innerHTML = "<span style='color:green;'>CATEGORY GREEN (DELAYED) - Stable Condition.</span>";
+        output.innerHTML = `
+          <div style="color: #16a34a; font-weight: 800; font-size: 0.9rem; margin-bottom: 6px;">CATEGORY GREEN — DELAYED CARE</div>
+          <p style="color: #15803d;">Patient parameters are stable. Low risk detected. Recommended for monitoring while critical cases are dispatched.</p>
+        `;
       }
     }
 
-    // 5. CANVAS MESH ANIMATION LOGIC
+    // -------------------------------------------------------------
+    // 5. MESH CANVAS VISUALIZER
+    // -------------------------------------------------------------
     const canvas = document.getElementById('meshCanvas');
     const ctx = canvas.getContext('2d');
-    canvas.width = canvas.offsetWidth;
-    canvas.height = canvas.offsetHeight;
 
-    const nodes = [
-      {x: 50, y: 50}, {x: 180, y: 80}, {x: 120, y: 120}, {x: 280, y: 40}
+    function resizeCanvas() {
+      canvas.width = canvas.parentElement.clientWidth;
+      canvas.height = 200;
+    }
+    resizeCanvas();
+    window.addEventListener('resize', resizeCanvas);
+
+    let nodes = [
+      { x: 80, y: 120 },
+      { x: 220, y: 60 },
+      { x: 380, y: 140 },
+      { x: 520, y: 70 }
     ];
 
     function drawMesh() {
       ctx.clearRect(0, 0, canvas.width, canvas.height);
-      ctx.strokeStyle = '#d946ef';
-      ctx.fillStyle = '#d946ef';
 
+      // Draw Connections
+      ctx.strokeStyle = 'rgba(217, 70, 239, 0.4)';
+      ctx.lineWidth = 1.5;
       for (let i = 0; i < nodes.length; i++) {
-        ctx.beginPath();
-        ctx.arc(nodes[i].x, nodes[i].y, 5, 0, Math.PI * 2);
-        ctx.fill();
-
         for (let j = i + 1; j < nodes.length; j++) {
           ctx.beginPath();
           ctx.moveTo(nodes[i].x, nodes[i].y);
@@ -233,8 +493,50 @@
           ctx.stroke();
         }
       }
+
+      // Draw Node Dots
+      for (let node of nodes) {
+        ctx.beginPath();
+        ctx.arc(node.x, node.y, 6, 0, Math.PI * 2);
+        ctx.fillStyle = '#f472b6';
+        ctx.shadowColor = '#d946ef';
+        ctx.shadowBlur = 10;
+        ctx.fill();
+        ctx.shadowBlur = 0;
+      }
     }
+
+    function addPeerNode() {
+      const x = Math.random() * (canvas.width - 60) + 30;
+      const y = Math.random() * (canvas.height - 60) + 30;
+      nodes.push({ x, y });
+      drawMesh();
+    }
+
     drawMesh();
+
+    // -------------------------------------------------------------
+    // 6. WEB AUDIO API SIREN ALARM
+    // -------------------------------------------------------------
+    function playSiren() {
+      try {
+        const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+        const osc = audioCtx.createOscillator();
+        const gain = audioCtx.createGain();
+
+        osc.type = 'sine';
+        osc.frequency.setValueAtTime(440, audioCtx.currentTime);
+        osc.frequency.exponentialRampToValueAtTime(880, audioCtx.currentTime + 0.5);
+
+        osc.connect(gain);
+        gain.connect(audioCtx.destination);
+
+        osc.start();
+        osc.stop(audioCtx.currentTime + 0.8);
+      } catch (e) {
+        alert("🚨 Siren Triggered!");
+      }
+    }
   </script>
 </body>
 </html>
