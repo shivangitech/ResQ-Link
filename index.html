@@ -231,6 +231,26 @@
             box-shadow: 0 2px 8px rgba(0,0,0,0.04);
         }
 
+        /* Styling for Hardware Control Section */
+        .hardware-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+            gap: 1.5rem;
+            margin-top: 1rem;
+        }
+        .hw-card {
+            background: #fff;
+            padding: 1.5rem;
+            border-radius: 16px;
+            border: 1px solid rgba(217, 70, 239, 0.3);
+            text-align: center;
+        }
+        .hw-status {
+            font-size: 1.5rem;
+            font-weight: bold;
+            margin: 0.5rem 0;
+        }
+
         footer {
             text-align: center;
             padding: 2rem;
@@ -251,6 +271,7 @@
             <div class="logo">🩷 MeshPulse</div>
             <ul class="nav-links">
                 <li><a href="#visualizer">Mesh Visualizer</a></li>
+                <li><a href="#hardware">ESP32 Hardware</a></li>
                 <li><a href="#triage">AI Triage</a></li>
                 <li><a href="#sos">SOS Dispatch</a></li>
                 <li><a href="#command">Command Center</a></li>
@@ -275,6 +296,37 @@
             <canvas id="meshCanvas"></canvas>
             <div style="margin-top: 1.2rem; text-align: center;">
                 <button class="btn-pink" onclick="addNode()">+ Add Peer Device Node</button>
+            </div>
+        </div>
+    </section>
+
+    <!-- ADDED SECTION: ESP32 Hardware Monitoring & Safety Cutoff Control -->
+    <section id="hardware">
+        <h2 class="section-title">ESP32 IoT Safety & Automated Cutoff Control</h2>
+        <div class="glass-panel">
+            <p style="text-align: center; color: #475569;">Real-time Telemetry & Automated Safety Relay Interruption System</p>
+            <div class="hardware-grid">
+                <!-- Flood Level Monitor -->
+                <div class="hw-card">
+                    <h3>🌊 Flood Monitoring</h3>
+                    <p style="font-size: 0.85rem; color: #64748b;">Ultrasonic Sensor HC-SR04</p>
+                    <div class="hw-status" id="waterLevelText">12 cm</div>
+                    <span class="badge badge-green" id="waterBadge">SAFE LEVEL</span>
+                </div>
+                <!-- Gas Cutoff System -->
+                <div class="hw-card">
+                    <h3>🔥 Gas Solenoid Valve</h3>
+                    <p style="font-size: 0.85rem; color: #64748b;">MQ-2 / Gas Cutoff Relay</p>
+                    <div class="hw-status" id="gasStatusText" style="color: #10b981;">OPEN</div>
+                    <button class="btn-pink" style="padding: 0.5rem 1rem; margin-top: 0.5rem;" onclick="toggleGasRelay()">Trigger Gas Cutoff</button>
+                </div>
+                <!-- Power Cutoff System -->
+                <div class="hw-card">
+                    <h3>⚡ Main Power Relay</h3>
+                    <p style="font-size: 0.85rem; color: #64748b;">Main Power Grid Interrupter</p>
+                    <div class="hw-status" id="powerStatusText" style="color: #10b981;">ACTIVE</div>
+                    <button class="btn-pink" style="padding: 0.5rem 1rem; margin-top: 0.5rem;" onclick="togglePowerRelay()">Emergency Power Cutoff</button>
+                </div>
             </div>
         </div>
     </section>
@@ -355,6 +407,73 @@
 
     <!-- Interactive Scripts -->
     <script>
+        // ADDED SCRIPT: Hardware Management & Simulation Logic
+        let gasCutoffActive = false;
+        let powerCutoffActive = false;
+
+        function toggleGasRelay() {
+            gasCutoffActive = !gasCutoffActive;
+            const text = document.getElementById('gasStatusText');
+            if (gasCutoffActive) {
+                text.innerText = "CUTOFF (CLOSED)";
+                text.style.color = "#ef4444";
+                triggerSystemAlert("🔥 WARNING: Gas Solenoid Relay CUTOFF Executed!");
+            } else {
+                text.innerText = "OPEN";
+                text.style.color = "#10b981";
+            }
+        }
+
+        function togglePowerRelay() {
+            powerCutoffActive = !powerCutoffActive;
+            const text = document.getElementById('powerStatusText');
+            if (powerCutoffActive) {
+                text.innerText = "OFF (ISOLATED)";
+                text.style.color = "#ef4444";
+                triggerSystemAlert("⚡ DANGER: Main Power Grid Relays CUTOFF Executed!");
+            } else {
+                text.innerText = "ACTIVE";
+                text.style.color = "#10b981";
+            }
+        }
+
+        function triggerSystemAlert(msg) {
+            const feed = document.getElementById('commandFeed');
+            const item = document.createElement('div');
+            item.className = 'feed-item';
+            item.innerHTML = `
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.3rem;">
+                    <strong>ESP32-HARDWARE-NODE</strong>
+                    <span class="badge badge-red">SYSTEM INTERRUPT</span>
+                </div>
+                <p>${msg}</p>
+            `;
+            feed.prepend(item);
+        }
+
+        // Ultrasonic Sensor Live Water Monitoring Simulation
+        setInterval(() => {
+            const waterCm = Math.floor(Math.random() * 85) + 5; 
+            const text = document.getElementById('waterLevelText');
+            const badge = document.getElementById('waterBadge');
+            
+            text.innerText = waterCm + " cm";
+
+            if (waterCm > 60) {
+                badge.innerText = "CRITICAL FLOODING";
+                badge.className = "badge badge-red";
+                if(!powerCutoffActive) {
+                   togglePowerRelay(); // Auto Power Cutoff on severe flooding
+                }
+            } else if (waterCm > 30) {
+                badge.innerText = "WARNING LEVEL";
+                badge.className = "badge badge-yellow";
+            } else {
+                badge.innerText = "SAFE LEVEL";
+                badge.className = "badge badge-green";
+            }
+        }, 4000);
+
         // 1. Web Audio API High-Frequency Emergency Siren Synthesizer
         function playSiren() {
             try {
@@ -380,6 +499,34 @@
         }
 
         // 2. Client-side Offline AI Triage Evaluation Logic
+        function calculateTriage() {
+            const b = document.getElementById('breathing').value;
+            const c = document.getElementById('consciousness').value;
+            const t = document.getElementById('trauma').value;
+            const res = document.getElementById('triageResult');
+
+            if (b === 'severe' || c === 'unresponsive') {
+                res.innerHTML = `
+                    <span class="badge badge-red">CATEGORY RED (IMMEDIATE)</span>
+                    <p style="margin-top:0.8rem; color:#ef4444; font-weight:bold;">Critical Life Threat Detected!</p>
+                    <p style="font-size:0.9rem; color:#475569;">Dispatch immediate advanced trauma life support. Keep patient's airway clear.</p>
+                `;
+            } else if (t === 'bleeding') {
+                res.innerHTML = `
+                    <span class="badge badge-yellow">CATEGORY YELLOW (DELAYED)</span>
+                    <p style="margin-top:0.8rem; color:#f59e0b; font-weight:bold;">Serious Injury - Urgent Care Needed</p>
+                    <p style="font-size:0.9rem; color:#475569;">Apply pressure bandages locally. Monitor vital signs every 10 minutes.</p>
+                `;
+            } else {
+                res.innerHTML = `
+                    <span class="badge badge-green">CATEGORY GREEN (MINOR)</span>
+                    <p style="margin-top:0.8rem; color:#10b981; font-weight:bold;">Stable Condition</p>
+                    <p style="font-size:0.9rem; color:#475569;">Provide basic first aid. Patient can be safely routed via secondary transport.</p>
+                `;
+            }
+        }
+
+        // 3. Interactive SOS Form Dispatcher & Dynamic Command Feed
         function calculateTriage() {
             const b = document.getElementById('breathing').value;
             const c = document.getElementById('consciousness').value;
