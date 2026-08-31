@@ -725,10 +725,10 @@
         animate();
         window.addEventListener('resize', resizeCanvas);
     </script>
-<!-- Firebase Complete Real-time Sync Script -->
+<!-- Final Working Real-Time Firebase Script -->
 <script type="module">
   import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
-  import { getFirestore, collection, addDoc, onSnapshot } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+  import { getFirestore, collection, addDoc, onSnapshot, query, orderBy } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
 
   const firebaseConfig = {
     apiKey: "AIzaSyCb1bKo8RwjkaY3D_a9azrDb9zmE8F2f6g",
@@ -742,51 +742,71 @@
   const app = initializeApp(firebaseConfig);
   const db = getFirestore(app);
 
-  // 1. Button click hone par Database me message bhejne ka code
-  document.addEventListener('DOMContentLoaded', () => {
-    const relayBtn = document.querySelector('button'); // Relay SOS button
-    if (relayBtn) {
-      relayBtn.addEventListener('click', async (e) => {
-        const inputs = document.querySelectorAll('input, textarea');
-        const nameInput = inputs[0] ? inputs[0].value : 'Anonymous';
-        const msgInput = inputs[1] ? inputs[1].value : 'Emergency SOS';
+  // 1. SOS Send karne ka Global Function
+  window.submitSOS = async function() {
+    const inputs = document.querySelectorAll('input, textarea');
+    let senderName = "Peer-Node";
+    let messageText = "";
 
-        if (msgInput.trim() !== '') {
-          try {
-            await addDoc(collection(db, "sos_messages"), {
-              sender: nameInput || "Peer-Node",
-              message: msgInput,
-              triageLevel: "CRITICAL SOS",
-              timestamp: new Date().toLocaleTimeString()
-            });
-            alert("SOS Message Sent to Real-time Backend!");
-          } catch (err) {
-            console.error("Error sending SOS:", err);
-          }
-        }
-      });
+    inputs.forEach(input => {
+      if (input.placeholder && input.placeholder.toLowerCase().includes("node")) {
+        if (input.value.trim()) senderName = input.value.trim();
+      }
+      if (input.tagName.toLowerCase() === 'textarea' || (input.placeholder && input.placeholder.toLowerCase().includes("trapped"))) {
+        if (input.value.trim()) messageText = input.value.trim();
+      }
+    });
+
+    if (!messageText && inputs.length >= 2) {
+      senderName = inputs[0].value || "Peer-Node";
+      messageText = inputs[1].value || "";
     }
-  });
 
-  // 2. Dusre phones par real-time message dikhane ka code
-  onSnapshot(collection(db, "sos_messages"), (snapshot) => {
+    if (!messageText.trim()) {
+      alert("Kripya Emergency Message zaroor likhein!");
+      return;
+    }
+
+    try {
+      await addDoc(collection(db, "sos_messages"), {
+        sender: senderName,
+        message: messageText,
+        triageLevel: "CRITICAL SOS",
+        createdAt: Date.now(),
+        timestamp: new Date().toLocaleTimeString()
+      });
+      alert("✅ Message Sent! Subhi devices par update ho raha hai.");
+    } catch (err) {
+      console.error("Firebase Send Error:", err);
+      alert("Error sending message: " + err.message);
+    }
+  };
+
+  // 2. Real-time Message Receiver (Jo doosre phone me live show karega)
+  const q = query(collection(db, "sos_messages"), orderBy("createdAt", "desc"));
+
+  onSnapshot(q, (snapshot) => {
     snapshot.docChanges().forEach((change) => {
       if (change.type === "added") {
         const data = change.doc.data();
         
-        // Command center section me naya message box add karna
-        const commandCenter = document.body;
-        const newCard = document.createElement('div');
-        newCard.style.cssText = "background: #1E293B; margin: 10px auto; padding: 15px; border-left: 5px solid #EF4444; border-radius: 8px; max-width: 90%; color: #FFF;";
-        newCard.innerHTML = `
-          <div style="display:flex; justify-content:space-between; align-items:center;">
-            <strong>${data.sender}</strong>
-            <span style="background:#EF4444; padding:3px 8px; border-radius:4px; font-size:12px;">${data.triageLevel}</span>
+        // Command Center container dhoondhna
+        const container = document.querySelector('.command-center-container') || 
+                          document.querySelector('#command-center') || 
+                          document.body;
+
+        const card = document.createElement('div');
+        card.style.cssText = "background: #1E293B; margin: 12px auto; padding: 16px; border-left: 5px solid #EF4444; border-radius: 8px; max-width: 90%; color: #FFF; box-shadow: 0 4px 6px rgba(0,0,0,0.3);";
+        card.innerHTML = `
+          <div style="display:flex; justify-between; align-items:center; margin-bottom: 6px;">
+            <strong style="color:#F8FAFC; font-size:16px;">${data.sender}</strong>
+            <span style="background:#EF4444; color:#FFF; padding:2px 8px; border-radius:4px; font-size:11px; font-weight:bold;">${data.triageLevel}</span>
           </div>
-          <p style="color:#94A3B8; margin-top:8px;">${data.message}</p>
-          <small style="color:#64748B;">Time: ${data.timestamp || 'Just now'}</small>
+          <p style="color:#CBD5E1; margin:0 0 8px 0; font-size:14px;">${data.message}</p>
+          <small style="color:#64748B; font-size:11px;">🕒 ${data.timestamp || 'Just now'}</small>
         `;
-        commandCenter.appendChild(newCard);
+        
+        container.prepend(card);
       }
     });
   });
