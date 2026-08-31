@@ -725,12 +725,11 @@
         animate();
         window.addEventListener('resize', resizeCanvas);
     </script>
-<!-- Firebase SDK & Real-time Integration -->
+<!-- Firebase Complete Real-time Sync Script -->
 <script type="module">
   import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
   import { getFirestore, collection, addDoc, onSnapshot } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
 
-  // Aapki Exact Firebase Configuration
   const firebaseConfig = {
     apiKey: "AIzaSyCb1bKo8RwjkaY3D_a9azrDb9zmE8F2f6g",
     authDomain: "resq-link-backend-a79c8.firebaseapp.com",
@@ -740,31 +739,54 @@
     appId: "1:458837748460:web:f2f4822fcbe85154f293c9"
   };
 
-  // Initialize Firebase & Database
   const app = initializeApp(firebaseConfig);
   const db = getFirestore(app);
 
-  // Global Function for Sending SOS to Database
-  window.sendEmergencySOS = async function(sosDetails) {
-    try {
-      await addDoc(collection(db, "sos_messages"), {
-        sender: sosDetails.sender || "Emergency Node",
-        message: sosDetails.message || "SOS Alert Received",
-        triageLevel: sosDetails.triage || "Red Alert",
-        timestamp: new Date().toLocaleTimeString()
-      });
-      alert("SOS Message Sent & Saved in Firebase Backend!");
-    } catch (e) {
-      console.error("Firebase Error: ", e);
-    }
-  };
+  // 1. Button click hone par Database me message bhejne ka code
+  document.addEventListener('DOMContentLoaded', () => {
+    const relayBtn = document.querySelector('button'); // Relay SOS button
+    if (relayBtn) {
+      relayBtn.addEventListener('click', async (e) => {
+        const inputs = document.querySelectorAll('input, textarea');
+        const nameInput = inputs[0] ? inputs[0].value : 'Anonymous';
+        const msgInput = inputs[1] ? inputs[1].value : 'Emergency SOS';
 
-  // Real-time Receiver
+        if (msgInput.trim() !== '') {
+          try {
+            await addDoc(collection(db, "sos_messages"), {
+              sender: nameInput || "Peer-Node",
+              message: msgInput,
+              triageLevel: "CRITICAL SOS",
+              timestamp: new Date().toLocaleTimeString()
+            });
+            alert("SOS Message Sent to Real-time Backend!");
+          } catch (err) {
+            console.error("Error sending SOS:", err);
+          }
+        }
+      });
+    }
+  });
+
+  // 2. Dusre phones par real-time message dikhane ka code
   onSnapshot(collection(db, "sos_messages"), (snapshot) => {
     snapshot.docChanges().forEach((change) => {
       if (change.type === "added") {
         const data = change.doc.data();
-        console.log("New Real-time SOS:", data);
+        
+        // Command center section me naya message box add karna
+        const commandCenter = document.body;
+        const newCard = document.createElement('div');
+        newCard.style.cssText = "background: #1E293B; margin: 10px auto; padding: 15px; border-left: 5px solid #EF4444; border-radius: 8px; max-width: 90%; color: #FFF;";
+        newCard.innerHTML = `
+          <div style="display:flex; justify-content:space-between; align-items:center;">
+            <strong>${data.sender}</strong>
+            <span style="background:#EF4444; padding:3px 8px; border-radius:4px; font-size:12px;">${data.triageLevel}</span>
+          </div>
+          <p style="color:#94A3B8; margin-top:8px;">${data.message}</p>
+          <small style="color:#64748B;">Time: ${data.timestamp || 'Just now'}</small>
+        `;
+        commandCenter.appendChild(newCard);
       }
     });
   });
