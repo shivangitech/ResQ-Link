@@ -725,5 +725,49 @@
         animate();
         window.addEventListener('resize', resizeCanvas);
     </script>
+<!-- Firebase SDK & Real-time Integration -->
+<script type="module">
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+  import { getFirestore, collection, addDoc, onSnapshot } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+
+  // Aapki Exact Firebase Configuration
+  const firebaseConfig = {
+    apiKey: "AIzaSyCb1bKo8RwjkaY3D_a9azrDb9zmE8F2f6g",
+    authDomain: "resq-link-backend-a79c8.firebaseapp.com",
+    projectId: "resq-link-backend-a79c8",
+    storageBucket: "resq-link-backend-a79c8.firebasestorage.app",
+    messagingSenderId: "458837748460",
+    appId: "1:458837748460:web:f2f4822fcbe85154f293c9"
+  };
+
+  // Initialize Firebase & Database
+  const app = initializeApp(firebaseConfig);
+  const db = getFirestore(app);
+
+  // Global Function for Sending SOS to Database
+  window.sendEmergencySOS = async function(sosDetails) {
+    try {
+      await addDoc(collection(db, "sos_messages"), {
+        sender: sosDetails.sender || "Emergency Node",
+        message: sosDetails.message || "SOS Alert Received",
+        triageLevel: sosDetails.triage || "Red Alert",
+        timestamp: new Date().toLocaleTimeString()
+      });
+      alert("SOS Message Sent & Saved in Firebase Backend!");
+    } catch (e) {
+      console.error("Firebase Error: ", e);
+    }
+  };
+
+  // Real-time Receiver
+  onSnapshot(collection(db, "sos_messages"), (snapshot) => {
+    snapshot.docChanges().forEach((change) => {
+      if (change.type === "added") {
+        const data = change.doc.data();
+        console.log("New Real-time SOS:", data);
+      }
+    });
+  });
+</script>
 </body>
 </html>
