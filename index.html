@@ -725,7 +725,7 @@
         animate();
         window.addEventListener('resize', resizeCanvas);
     </script>
-<!-- Final Working Real-Time Firebase Script -->
+<!-- Complete Real-Time Sync & SOS Script -->
 <script type="module">
   import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
   import { getFirestore, collection, addDoc, onSnapshot, query, orderBy } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
@@ -742,10 +742,10 @@
   const app = initializeApp(firebaseConfig);
   const db = getFirestore(app);
 
-  // 1. SOS Send karne ka Global Function
-  window.submitSOS = async function() {
+  // 1. SOS Send Function
+  async function dispatchSOS() {
     const inputs = document.querySelectorAll('input, textarea');
-    let senderName = "Peer-Node";
+    let senderName = "Emergency Node";
     let messageText = "";
 
     inputs.forEach(input => {
@@ -758,7 +758,7 @@
     });
 
     if (!messageText && inputs.length >= 2) {
-      senderName = inputs[0].value || "Peer-Node";
+      senderName = inputs[0].value || "Emergency Node";
       messageText = inputs[1].value || "";
     }
 
@@ -775,14 +775,22 @@
         createdAt: Date.now(),
         timestamp: new Date().toLocaleTimeString()
       });
-      alert("✅ Message Sent! Subhi devices par update ho raha hai.");
+      alert("✅ Emergency SOS Sent to Cloud Database!");
     } catch (err) {
-      console.error("Firebase Send Error:", err);
-      alert("Error sending message: " + err.message);
+      console.error("Firebase Error:", err);
+      alert("Error: " + err.message);
     }
-  };
+  }
 
-  // 2. Real-time Message Receiver (Jo doosre phone me live show karega)
+  // Bind Button Event Directly
+  window.addEventListener('DOMContentLoaded', () => {
+    const sosButton = document.getElementById('sosBtn') || document.querySelector('button');
+    if (sosButton) {
+      sosButton.onclick = dispatchSOS;
+    }
+  });
+
+  // 2. Real-Time Listener (Receives messages on all devices)
   const q = query(collection(db, "sos_messages"), orderBy("createdAt", "desc"));
 
   onSnapshot(q, (snapshot) => {
@@ -790,15 +798,15 @@
       if (change.type === "added") {
         const data = change.doc.data();
         
-        // Command Center container dhoondhna
+        // Find Command Center Box
         const container = document.querySelector('.command-center-container') || 
                           document.querySelector('#command-center') || 
                           document.body;
 
         const card = document.createElement('div');
-        card.style.cssText = "background: #1E293B; margin: 12px auto; padding: 16px; border-left: 5px solid #EF4444; border-radius: 8px; max-width: 90%; color: #FFF; box-shadow: 0 4px 6px rgba(0,0,0,0.3);";
+        card.style.cssText = "background: #1E293B; margin: 12px auto; padding: 16px; border-left: 5px solid #EF4444; border-radius: 8px; width: 90%; color: #FFF; box-shadow: 0 4px 6px rgba(0,0,0,0.3);";
         card.innerHTML = `
-          <div style="display:flex; justify-between; align-items:center; margin-bottom: 6px;">
+          <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom: 6px;">
             <strong style="color:#F8FAFC; font-size:16px;">${data.sender}</strong>
             <span style="background:#EF4444; color:#FFF; padding:2px 8px; border-radius:4px; font-size:11px; font-weight:bold;">${data.triageLevel}</span>
           </div>
