@@ -818,6 +818,39 @@
       }
     });
   });
+  // Button Event Listener Fix
+  document.addEventListener("DOMContentLoaded", () => {
+    const sosBtn = document.getElementById("sosBtn") || document.querySelector("button");
+    if (sosBtn) {
+      sosBtn.addEventListener("click", async (e) => {
+        e.preventDefault();
+        const senderInput = document.querySelector("input[type='text']") || document.getElementById("senderName");
+        const msgInput = document.querySelector("textarea") || document.getElementById("sosMessage");
+
+        const sender = senderInput ? senderInput.value.trim() : "Emergency Caller";
+        const message = msgInput ? msgInput.value.trim() : "";
+
+        if (!message) {
+          alert("Please enter a message!");
+          return;
+        }
+
+        try {
+          await db.collection("sos_messages").add({
+            sender: sender || "Emergency Caller",
+            message: message,
+            triageLevel: "RED (URGENT)",
+            timestamp: new Date().toLocaleTimeString()
+          });
+          if (msgInput) msgInput.value = "";
+          alert("SOS Broadcast Sent Successfully!");
+        } catch (err) {
+          alert("Error sending message: " + err.message);
+        }
+      });
+    }
+  });
+
 </script>
 </body>
 </html>
