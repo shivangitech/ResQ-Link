@@ -767,12 +767,11 @@
     }
 
     try {
-      await addDoc(collection(db, "sos_messages"), {
+      await addDoc(collection(db, "sos_alerts"), {
         sender: senderName,
         message: messageText,
         triageLevel: "CRITICAL SOS",
-        createdAt: Date.now(),
-        timestamp: new Date().toLocaleTimeString()
+         timestamp:  Date.now()
       });
       alert("✅ Emergency SOS Sent to Cloud Database!");
     } catch (err) {
@@ -835,7 +834,7 @@
         }
 
         try {
-          await db.collection("sos_messages").add({
+          await db.collection("sos_alerts").add({
             sender: sender || "Emergency Caller",
             message: message,
             triageLevel: "RED (URGENT)",
