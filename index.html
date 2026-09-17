@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ResQ-link — P2P Emergency Network & AI Triage</title>
+    <title>ResQ-Link — Smart Safety, Quick Response</title>
     <style>
         :root {
             --bg-primary: #0f172a;
@@ -64,7 +64,7 @@
         .nav-links {
             display: flex;
             list-style: none;
-            gap: 1.5rem;
+            gap: 1.2rem;
             align-items: center;
         }
 
@@ -73,6 +73,7 @@
             color: var(--text-main);
             font-weight: 600;
             transition: color 0.3s;
+            font-size: 0.95rem;
         }
 
         .nav-links a:hover {
@@ -83,7 +84,7 @@
             background: transparent;
             border: 2px solid var(--accent-cyan);
             color: var(--accent-cyan);
-            padding: 0.5rem 1.2rem;
+            padding: 0.4rem 1rem;
             border-radius: 20px;
             font-weight: 600;
             cursor: pointer;
@@ -95,13 +96,14 @@
             color: var(--bg-primary);
         }
 
+        /* HERO SECTION */
         .hero {
-            height: 85vh;
+            min-height: 85vh;
             display: flex;
             align-items: center;
             justify-content: center;
             text-align: center;
-            padding: 0 1rem;
+            padding: 2rem 1rem;
             margin-top: 60px;
         }
 
@@ -115,8 +117,21 @@
             max-width: 850px;
         }
 
+        .tagline {
+            display: inline-block;
+            background: rgba(6, 182, 212, 0.1);
+            color: var(--accent-cyan);
+            padding: 0.4rem 1.2rem;
+            border-radius: 20px;
+            font-weight: 700;
+            font-size: 0.95rem;
+            margin-bottom: 1rem;
+            border: 1px solid rgba(6, 182, 212, 0.3);
+            letter-spacing: 0.5px;
+        }
+
         .hero h1 {
-            font-size: 3rem;
+            font-size: 2.8rem;
             margin-bottom: 1rem;
             background: linear-gradient(45deg, var(--accent-cyan), #60a5fa);
             -webkit-background-clip: text;
@@ -124,7 +139,7 @@
         }
 
         .hero p {
-            font-size: 1.2rem;
+            font-size: 1.15rem;
             color: var(--text-muted);
             margin-bottom: 2rem;
         }
@@ -161,6 +176,12 @@
             color: var(--text-main);
         }
 
+        .grid-3 {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 1.5rem;
+        }
+
         .grid-2 {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
@@ -174,6 +195,40 @@
             border-radius: 20px;
             border: 1px solid rgba(6, 182, 212, 0.2);
             box-shadow: 0 8px 25px rgba(0,0,0,0.3);
+        }
+
+        .step-card {
+            background: #0f172a;
+            padding: 1.8rem;
+            border-radius: 16px;
+            border: 1px solid rgba(6, 182, 212, 0.2);
+            text-align: center;
+        }
+
+        .step-num {
+            width: 40px;
+            height: 40px;
+            background: var(--accent-cyan);
+            color: #0f172a;
+            border-radius: 50%;
+            font-weight: bold;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 1rem auto;
+        }
+
+        .partner-card {
+            background: #0f172a;
+            padding: 1.5rem;
+            border-radius: 16px;
+            border: 1px solid rgba(59, 130, 246, 0.3);
+            text-align: center;
+            transition: transform 0.3s;
+        }
+
+        .partner-card:hover {
+            transform: translateY(-5px);
         }
 
         canvas {
@@ -322,26 +377,26 @@
 </head>
 <body>
 
-    <!-- Section 1: Navigation Bar -->
+    <!-- Header Navigation -->
     <header>
         <nav>
-            <div class="logo">⚡ ResQ-link</div>
+            <div class="logo">⚡ ResQ-Link</div>
             <ul class="nav-links">
-                <li><a href="#visualizer">Mesh Visualizer</a></li>
-                <li><a href="#hardware">ESP32 Hardware</a></li>
-                <li><a href="#triage">AI Triage</a></li>
-                <li><a href="#sos">SOS Dispatch</a></li>
+                <li><a href="#home">Home</a></li>
+                <li><a href="#how-it-works">How It Works</a></li>
+                <li><a href="#partners">Relief Partners</a></li>
+                <li><a href="#sos">SOS Dispatcher</a></li>
                 <li><a href="#command">Command Center</a></li>
                 <li><button class="btn-login" onclick="openLoginModal()">Login</button></li>
             </ul>
         </nav>
     </header>
 
-    <!-- Role-Based Login Modal Popup -->
+    <!-- Role-Based Login Modal -->
     <div id="loginModal" class="modal">
         <div class="modal-content">
             <span class="close-btn" onclick="closeLoginModal()">&times;</span>
-            <h2 style="margin-bottom: 1rem; color: var(--accent-cyan); text-align: center;">ResQ-link Access Portal</h2>
+            <h2 style="margin-bottom: 1rem; color: var(--accent-cyan); text-align: center;">ResQ-Link Portal</h2>
             
             <label style="font-weight: 600;">Select Account Role:</label>
             <select id="userRole">
@@ -360,16 +415,67 @@
         </div>
     </div>
 
-    <!-- Hero Banner -->
-    <section class="hero">
+    <!-- 1. Home Section -->
+    <section id="home" class="hero">
         <div class="hero-card">
-            <h1>Offline Emergency Mesh Network ⚡</h1>
-            <p>A decentralized, offline-first communication framework connecting trapped citizens with first responders using dynamic P2P relaying & AI triage during cellular network collapse.</p>
-            <a href="#sos" class="btn-cyan">Broadcast Emergency SOS Alert</a>
+            <span class="tagline">Smart Safety, Quick Response</span>
+            <h1>ResQ-Link Emergency Network ⚡</h1>
+            <p>ResQ-Link is an intelligent emergency response network designed to bridge communication gaps during critical disasters. It connects trapped citizens with first responders in real-time, providing live GPS tracking, incident photo sharing, and automated AI triage evaluation.</p>
+            <div style="display: flex; gap: 1rem; justify-content: center; flex-wrap: wrap;">
+                <a href="#sos" class="btn-cyan" style="background: linear-gradient(135deg, #ef4444, #dc2626);">🚨 Dispatch Emergency SOS</a>
+                <a href="#how-it-works" class="btn-cyan" style="background: transparent; border: 2px solid var(--accent-cyan); color: var(--accent-cyan);">Learn How It Works</a>
+            </div>
         </div>
     </section>
 
-    <!-- Interactive P2P Node Simulation Canvas -->
+    <!-- 2. How It Works Section -->
+    <section id="how-it-works">
+        <h2 class="section-title">How It Works</h2>
+        <div class="grid-3">
+            <div class="step-card">
+                <div class="step-num">1</div>
+                <h3>Trigger SOS Alert</h3>
+                <p style="color: var(--text-muted); font-size: 0.95rem; margin-top: 0.5rem;">User fills out an emergency alert with automatic pan-India GPS location tagging & incident photo upload.</p>
+            </div>
+            <div class="step-card">
+                <div class="step-num">2</div>
+                <h3>P2P Cloud Relay</h3>
+                <p style="color: var(--text-muted); font-size: 0.95rem; margin-top: 0.5rem;">Data is immediately broadcasted via Firestore cloud modules to nearby responders and active mesh nodes.</p>
+            </div>
+            <div class="step-card">
+                <div class="step-num">3</div>
+                <h3>Rapid Rescue & Relief</h3>
+                <p style="color: var(--text-muted); font-size: 0.95rem; margin-top: 0.5rem;">First responders track exact map coordinates, view scene imagery, and dispatch targeted emergency rescue.</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- 3. Food & Emergency Service Collaborations Section -->
+    <section id="partners">
+        <h2 class="section-title">Emergency Relief & Supply Collaborations</h2>
+        <div class="glass-panel">
+            <p style="text-align: center; color: var(--text-muted); margin-bottom: 1.5rem;">Quick links to external partner platforms for food, essential supplies, and government aid during crisis situations.</p>
+            <div class="grid-3">
+                <div class="partner-card">
+                    <h3 style="color: #f97316;">🍲 Food Relief Partner 1</h3>
+                    <p style="font-size: 0.85rem; color: var(--text-muted); margin: 0.5rem 0;">Direct access for food delivery & ration supply orders.</p>
+                    <a href="https://www.zomato.com" target="_blank" class="btn-cyan" style="padding: 0.5rem 1rem; font-size: 0.85rem; margin-top: 0.5rem;">Open Food Partner App</a>
+                </div>
+                <div class="partner-card">
+                    <h3 style="color: #fc8019;">📦 Food & Essentials Partner 2</h3>
+                    <p style="font-size: 0.85rem; color: var(--text-muted); margin: 0.5rem 0;">Rapid delivery of groceries, water packets, and medical supplies.</p>
+                    <a href="https://www.swiggy.com" target="_blank" class="btn-cyan" style="padding: 0.5rem 1rem; font-size: 0.85rem; margin-top: 0.5rem;">Open Essentials Partner</a>
+                </div>
+                <div class="partner-card">
+                    <h3 style="color: var(--accent-cyan);">🏥 Govt Emergency Portal</h3>
+                    <p style="font-size: 0.85rem; color: var(--text-muted); margin: 0.5rem 0;">National Disaster Management Authority (NDMA) official helpline.</p>
+                    <a href="https://ndma.gov.in" target="_blank" class="btn-cyan" style="padding: 0.5rem 1rem; font-size: 0.85rem; margin-top: 0.5rem;">Visit Official Portal</a>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Interactive P2P Mesh Visualizer -->
     <section id="visualizer">
         <h2 class="section-title">Live Peer-to-Peer Mesh Visualizer</h2>
         <div class="glass-panel">
@@ -381,27 +487,24 @@
         </div>
     </section>
 
-    <!-- ESP32 Hardware Monitoring Section -->
+    <!-- ESP32 Hardware Monitoring -->
     <section id="hardware">
         <h2 class="section-title">ESP32 IoT Safety & Automated Cutoff Control</h2>
         <div class="glass-panel">
             <p style="text-align: center; color: var(--text-muted); margin-bottom: 1rem;">Real-time Telemetry & Automated Safety Relay Interruption System</p>
             <div class="hardware-grid">
-                <!-- Flood Level Monitor -->
                 <div class="hw-card">
                     <h3>🌊 Flood Monitoring</h3>
                     <p style="font-size: 0.85rem; color: var(--text-muted);">Ultrasonic Sensor HC-SR04</p>
                     <div class="hw-status" id="waterLevelText">12 cm</div>
                     <span class="badge badge-green" id="waterBadge">SAFE LEVEL</span>
                 </div>
-                <!-- Gas Cutoff System -->
                 <div class="hw-card">
                     <h3>🔥 Gas Solenoid Valve</h3>
                     <p style="font-size: 0.85rem; color: var(--text-muted);">MQ-2 / Gas Cutoff Relay</p>
                     <div class="hw-status" id="gasStatusText" style="color: var(--success);">OPEN</div>
                     <button class="btn-cyan" style="padding: 0.5rem 1rem; margin-top: 0.5rem;" onclick="toggleGasRelay()">Trigger Gas Cutoff</button>
                 </div>
-                <!-- Power Cutoff System -->
                 <div class="hw-card">
                     <h3>⚡ Main Power Relay</h3>
                     <p style="font-size: 0.85rem; color: var(--text-muted);">Main Power Grid Interrupter</p>
@@ -447,7 +550,7 @@
         </div>
     </section>
 
-    <!-- SOS Dispatcher (With Photo & GPS Tracking) -->
+    <!-- Emergency SOS Dispatcher -->
     <section id="sos">
         <h2 class="section-title">Emergency SOS Dispatcher</h2>
         <div class="glass-panel">
@@ -463,7 +566,7 @@
 
                 <p id="locationStatus" style="font-size: 0.85rem; color: var(--accent-cyan); margin-bottom: 1rem;">📍 Live Location auto-detecting via GPS...</p>
                 
-                <button type="submit" id="sosBtn" class="btn-cyan">Relay SOS Over Cloud Mesh</button>
+                <button type="submit" id="sosBtn" class="btn-cyan" style="background: linear-gradient(135deg, #ef4444, #dc2626); width: 100%;">Broadcast SOS Alert</button>
             </form>
         </div>
     </section>
@@ -484,11 +587,11 @@
         </div>
     </section>
 
-    <!-- Audio Siren Beacon Button -->
+    <!-- Emergency Siren Icon -->
     <div class="sos-beacon" onclick="playSiren()" title="Click for Emergency High-Frequency Audio Pulse">🚨</div>
 
     <footer>
-        <p>ResQ-link — P2P Offline Emergency Response Framework</p>
+        <p>ResQ-Link — Smart Safety, Quick Response</p>
     </footer>
 
     <!-- Interactive Scripts -->
@@ -715,7 +818,6 @@
       const app = initializeApp(firebaseConfig);
       const db = getFirestore(app);
 
-      // Pan-India GPS Auto Detection
       let userLocation = { lat: null, lng: null };
       if (navigator.geolocation) {
         navigator.geolocation.getCurrentPosition(
@@ -730,7 +832,6 @@
         );
       }
 
-      // Convert Photo to Base64
       const convertPhotoToBase64 = (file) => {
         return new Promise((resolve) => {
           if(!file) resolve("");
@@ -741,7 +842,6 @@
         });
       };
 
-      // Real-Time SOS Dispatch Event
       document.addEventListener("DOMContentLoaded", () => {
         const sosForm = document.getElementById("sosForm");
         if (sosForm) {
@@ -768,7 +868,7 @@
                 timestamp: Date.now()
               });
 
-              alert("✅ Emergency SOS with GPS & Photo Broadcasted Successfully!");
+              alert("✅ Emergency SOS Broadcasted Successfully!");
               sosForm.reset();
             } catch (err) {
               console.error("Firebase Error:", err);
@@ -778,7 +878,6 @@
         }
       });
 
-      // Real-Time Listener (Populates Command Center)
       const q = query(collection(db, "sos_alerts"), orderBy("timestamp", "desc"));
 
       onSnapshot(q, (snapshot) => {
