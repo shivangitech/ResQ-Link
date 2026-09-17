@@ -6,18 +6,15 @@
     <title>ResQ-link — P2P Emergency Network & AI Triage</title>
     <style>
         :root {
-            /* Updated Professional Navy Blue & Cyan Palette */
-            --bg-primary: #0f172a;       /* Dark Navy Blue */
-            --bg-card: #1e293b;          /* Dark Slate Card */
-            --text-main: #f8fafc;        /* Off White */
-            --text-muted: #94a3b8;       /* Grey Text */
-            --accent-cyan: #06b6d4;      /* Cyan Accent */
-            --accent-blue: #3b82f6;      /* Bright Blue */
-            
-            /* Status Indicators */
-            --danger: #ef4444;          /* Red SOS / Warning */
-            --warning: #f97316;         /* Orange Alert */
-            --success: #22c55e;         /* Green Normal Status */
+            --bg-primary: #0f172a;
+            --bg-card: #1e293b;
+            --text-main: #f8fafc;
+            --text-muted: #94a3b8;
+            --accent-cyan: #06b6d4;
+            --accent-blue: #3b82f6;
+            --danger: #ef4444;
+            --warning: #f97316;
+            --success: #22c55e;
         }
 
         * {
@@ -273,7 +270,6 @@
             margin: 0.5rem 0;
         }
 
-        /* LOGIN MODAL STYLES */
         .modal {
             display: none;
             position: fixed;
@@ -451,18 +447,23 @@
         </div>
     </section>
 
-    <!-- SOS Dispatcher -->
+    <!-- SOS Dispatcher (With Photo & GPS Tracking) -->
     <section id="sos">
         <h2 class="section-title">Emergency SOS Dispatcher</h2>
         <div class="glass-panel">
-            <form onsubmit="sendSOS(event)">
+            <form id="sosForm">
                 <label style="font-weight: 600;">Sender Name / Node ID:</label>
                 <input type="text" id="senderName" placeholder="e.g., Peer-Node-308" required>
                 
-                <label style="font-weight: 600;">Emergency Message & Location Details:</label>
+                <label style="font-weight: 600;">Emergency Message & Details:</label>
                 <textarea id="sosMessage" rows="3" placeholder="Describe trapped count, water levels, or critical medical needs..." required></textarea>
                 
-                <button type="submit" class="btn-cyan">Relay SOS Over Mesh</button>
+                <label style="font-weight: 600;">📸 Upload Disaster Incident Photo (Optional):</label>
+                <input type="file" id="sosPhoto" accept="image/*" style="margin-bottom: 1rem;">
+
+                <p id="locationStatus" style="font-size: 0.85rem; color: var(--accent-cyan); margin-bottom: 1rem;">📍 Live Location auto-detecting via GPS...</p>
+                
+                <button type="submit" id="sosBtn" class="btn-cyan">Relay SOS Over Cloud Mesh</button>
             </form>
         </div>
     </section>
@@ -471,13 +472,13 @@
     <section id="command">
         <h2 class="section-title">Live Responder Command Center</h2>
         <div class="glass-panel">
-            <div id="commandFeed">
+            <div id="commandFeed" class="command-center-container">
                 <div class="feed-item">
                     <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.3rem;">
                         <strong>Central-HQ-Node</strong>
                         <span class="badge badge-green">BACKBONE OK</span>
                     </div>
-                    <p>Mesh gateway synchronized. 14 local peer relays active across sector 4.</p>
+                    <p>Mesh gateway synchronized. Live Pan-India GPS tracking enabled.</p>
                 </div>
             </div>
         </div>
@@ -492,7 +493,6 @@
 
     <!-- Interactive Scripts -->
     <script>
-        // Modal Control Scripts
         function openLoginModal() {
             document.getElementById('loginModal').style.display = 'block';
         }
@@ -522,7 +522,6 @@
             }
         }
 
-        // Hardware Controls
         let gasCutoffActive = false;
         let powerCutoffActive = false;
 
@@ -566,7 +565,6 @@
             feed.prepend(item);
         }
 
-        // Ultrasonic Sensor Live Water Monitoring Simulation (Based on ESP32 C++ Code Threshold: 15cm)
         setInterval(() => {
             const waterCm = Math.floor(Math.random() * 50) + 2; 
             const text = document.getElementById('waterLevelText');
@@ -574,7 +572,7 @@
             
             text.innerText = waterCm + " cm";
 
-            if (waterCm < 15) { // Match C++ logic: distanceCm < 15.0 means flood high
+            if (waterCm < 15) {
                 badge.innerText = "CRITICAL FLOODING";
                 badge.className = "badge badge-red";
                 if(!powerCutoffActive) {
@@ -589,7 +587,6 @@
             }
         }, 4000);
 
-        // Web Audio Siren
         function playSiren() {
             try {
                 const ctx = new (window.AudioContext || window.webkitAudioContext)();
@@ -608,7 +605,6 @@
             }
         }
 
-        // AI Triage Calculator
         function calculateTriage() {
             const b = document.getElementById('breathing').value;
             const c = document.getElementById('consciousness').value;
@@ -636,30 +632,6 @@
             }
         }
 
-        // SOS Dispatch
-        function sendSOS(e) {
-            e.preventDefault();
-            const name = document.getElementById('senderName').value;
-            const msg = document.getElementById('sosMessage').value;
-            const feed = document.getElementById('commandFeed');
-
-            const item = document.createElement('div');
-            item.className = 'feed-item';
-            item.innerHTML = `
-                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.3rem;">
-                    <strong>${name}</strong>
-                    <span class="badge badge-red">CRITICAL SOS</span>
-                </div>
-                <p>${msg}</p>
-            `;
-            feed.prepend(item);
-
-            alert("🚨 Distress signal broadcasted across local P2P Mesh nodes!");
-            document.getElementById('senderName').value = '';
-            document.getElementById('sosMessage').value = '';
-        }
-
-        // Canvas P2P Visualizer
         const canvas = document.getElementById('meshCanvas');
         const ctx = canvas.getContext('2d');
         
@@ -725,130 +697,127 @@
         animate();
         window.addEventListener('resize', resizeCanvas);
     </script>
-<!-- Complete Real-Time Sync & SOS Script -->
-<script type="module">
-  import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
-  import { getFirestore, collection, addDoc, onSnapshot, query, orderBy } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
 
-  const firebaseConfig = {
-    apiKey:"AIzaSyCb1bKo8RwjksY3D_e9azzDb"   authDomain: "resq-link-backend-a79c8.firebaseapp.com",
-    projectId: "resq-link-backend-a79c8",
-    storageBucket: "resq-link-backend-a79c8.firebasestorage.app",
-    messagingSenderId: "458837748460",
-    appId: "1:458837748460:web:f2f4822fcbe85154f293c9"
-  };
+    <!-- Complete Real-Time Sync, Camera & GPS Script -->
+    <script type="module">
+      import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+      import { getFirestore, collection, addDoc, onSnapshot, query, orderBy } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
 
-  const app = initializeApp(firebaseConfig);
-  const db = getFirestore(app);
+      const firebaseConfig = {
+        apiKey: "AIzaSyCb1bKo8RwjksY3D_e9azzDb",
+        authDomain: "resq-link-backend-a79c8.firebaseapp.com",
+        projectId: "resq-link-backend-a79c8",
+        storageBucket: "resq-link-backend-a79c8.firebasestorage.app",
+        messagingSenderId: "458837748460",
+        appId: "1:458837748460:web:f2f4822fcbe85154f293c9"
+      };
 
-  // 1. SOS Send Function
-  async function dispatchSOS() {
-    const inputs = document.querySelectorAll('input, textarea');
-    let senderName = "Emergency Node";
-    let messageText = "";
+      const app = initializeApp(firebaseConfig);
+      const db = getFirestore(app);
 
-    inputs.forEach(input => {
-      if (input.placeholder && input.placeholder.toLowerCase().includes("node")) {
-        if (input.value.trim()) senderName = input.value.trim();
+      // Pan-India GPS Auto Detection
+      let userLocation = { lat: null, lng: null };
+      if (navigator.geolocation) {
+        navigator.geolocation.getCurrentPosition(
+          (pos) => {
+            userLocation = { lat: pos.coords.latitude, lng: pos.coords.longitude };
+            const statusEl = document.getElementById('locationStatus');
+            if(statusEl) statusEl.innerText = "📍 GPS Captured Successfully!";
+          },
+          (err) => {
+            console.warn("GPS Warning:", err.message);
+          }
+        );
       }
-      if (input.tagName.toLowerCase() === 'textarea' || (input.placeholder && input.placeholder.toLowerCase().includes("trapped"))) {
-        if (input.value.trim()) messageText = input.value.trim();
-      }
-    });
 
-    if (!messageText && inputs.length >= 2) {
-      senderName = inputs[0].value || "Emergency Node";
-      messageText = inputs[1].value || "";
-    }
+      // Convert Photo to Base64
+      const convertPhotoToBase64 = (file) => {
+        return new Promise((resolve) => {
+          if(!file) resolve("");
+          const reader = new FileReader();
+          reader.onloadend = () => resolve(reader.result);
+          reader.onerror = () => resolve("");
+          reader.readAsDataURL(file);
+        });
+      };
 
-    if (!messageText.trim()) {
-      alert("Kripya Emergency Message zaroor likhein!");
-      return;
-    }
+      // Real-Time SOS Dispatch Event
+      document.addEventListener("DOMContentLoaded", () => {
+        const sosForm = document.getElementById("sosForm");
+        if (sosForm) {
+          sosForm.addEventListener("submit", async (e) => {
+            e.preventDefault();
+            const senderName = document.getElementById("senderName").value.trim() || "Emergency Node";
+            const messageText = document.getElementById("sosMessage").value.trim();
+            const photoFile = document.getElementById("sosPhoto").files[0];
 
-    try {
-      await addDoc(collection(db, "sos_alerts"), {
-        sender: senderName,
-        message: messageText,
-        triageLevel: "CRITICAL SOS",
-         timestamp:  Date.now()
-      });
-      alert("✅ Emergency SOS Sent to Cloud Database!");
-    } catch (err) {
-      console.error("Firebase Error:", err);
-      alert("Error: " + err.message);
-    }
-  }
+            if (!messageText) {
+              alert("Kripya Emergency Message zaroor likhein!");
+              return;
+            }
 
-  // Bind Button Event Directly
-  window.addEventListener('DOMContentLoaded', () => {
-    const sosButton = document.getElementById('sosBtn') || document.querySelector('button');
-    if (sosButton) {
-      sosButton.onclick = dispatchSOS;
-    }
-  });
+            const imageBase64 = photoFile ? await convertPhotoToBase64(photoFile) : "";
 
-  // 2. Real-Time Listener (Receives messages on all devices)
-  const q = query(collection(db, "sos_messages"), orderBy("createdAt", "desc"));
+            try {
+              await addDoc(collection(db, "sos_alerts"), {
+                sender: senderName,
+                message: messageText,
+                triageLevel: "CRITICAL SOS",
+                location: userLocation,
+                photo: imageBase64,
+                timestamp: Date.now()
+              });
 
-  onSnapshot(q, (snapshot) => {
-    snapshot.docChanges().forEach((change) => {
-      if (change.type === "added") {
-        const data = change.doc.data();
-        
-        // Find Command Center Box
-        const container = document.querySelector('.command-center-container') || 
-                          document.querySelector('#command-center') || 
-                          document.body;
-
-        const card = document.createElement('div');
-        card.style.cssText = "background: #1E293B; margin: 12px auto; padding: 16px; border-left: 5px solid #EF4444; border-radius: 8px; width: 90%; color: #FFF; box-shadow: 0 4px 6px rgba(0,0,0,0.3);";
-        card.innerHTML = `
-          <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom: 6px;">
-            <strong style="color:#F8FAFC; font-size:16px;">${data.sender}</strong>
-            <span style="background:#EF4444; color:#FFF; padding:2px 8px; border-radius:4px; font-size:11px; font-weight:bold;">${data.triageLevel}</span>
-          </div>
-          <p style="color:#CBD5E1; margin:0 0 8px 0; font-size:14px;">${data.message}</p>
-          <small style="color:#64748B; font-size:11px;">🕒 ${data.timestamp || 'Just now'}</small>
-        `;
-        
-        container.prepend(card);
-      }
-    });
-  });
-  // Button Event Listener Fix
-  document.addEventListener("DOMContentLoaded", () => {
-    const sosBtn = document.getElementById("sosBtn") || document.querySelector("button");
-    if (sosBtn) {
-      sosBtn.addEventListener("click", async (e) => {
-        e.preventDefault();
-        const senderInput = document.querySelector("input[type='text']") || document.getElementById("senderName");
-        const msgInput = document.querySelector("textarea") || document.getElementById("sosMessage");
-
-        const sender = senderInput ? senderInput.value.trim() : "Emergency Caller";
-        const message = msgInput ? msgInput.value.trim() : "";
-
-        if (!message) {
-          alert("Please enter a message!");
-          return;
-        }
-
-        try {
-          await db.collection("sos_alerts").add({
-            sender: sender || "Emergency Caller",
-            message: message,
-            triageLevel: "RED (URGENT)",
-            timestamp: new Date().toLocaleTimeString()
+              alert("✅ Emergency SOS with GPS & Photo Broadcasted Successfully!");
+              sosForm.reset();
+            } catch (err) {
+              console.error("Firebase Error:", err);
+              alert("Error sending alert: " + err.message);
+            }
           });
-          if (msgInput) msgInput.value = "";
-          alert("SOS Broadcast Sent Successfully!");
-        } catch (err) {
-          alert("Error sending message: " + err.message);
         }
       });
-    }
-  });
 
-</script>
+      // Real-Time Listener (Populates Command Center)
+      const q = query(collection(db, "sos_alerts"), orderBy("timestamp", "desc"));
+
+      onSnapshot(q, (snapshot) => {
+        snapshot.docChanges().forEach((change) => {
+          if (change.type === "added") {
+            const data = change.doc.data();
+            const container = document.querySelector('.command-center-container') || document.body;
+
+            const mapBtn = (data.location && data.location.lat)
+              ? `<a href="https://maps.google.com/?q=${data.location.lat},${data.location.lng}" target="_blank" style="color:#06B6D4; text-decoration:underline; font-weight:bold; display:inline-block; margin-top:6px;">📍 Open Live Map Location</a>`
+              : `<span style="color:#94A3B8; font-size:12px;">📍 GPS Location Unavailable</span>`;
+
+            const photoPreview = data.photo 
+              ? `<div style="margin-top:8px;"><img src="${data.photo}" style="max-width:100%; border-radius:8px; max-height:180px; border:1px solid #06B6D4;"></div>`
+              : ``;
+
+            const card = document.createElement('div');
+            card.className = "feed-item";
+            card.style.cssText = "background: #1E293B; margin: 12px auto; padding: 16px; border-left: 5px solid #EF4444; border-radius: 8px; width: 100%; color: #FFF; box-shadow: 0 4px 6px rgba(0,0,0,0.3);";
+            
+            const timeFormatted = data.timestamp ? new Date(data.timestamp).toLocaleTimeString() : 'Just now';
+
+            card.innerHTML = `
+              <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom: 6px;">
+                <strong style="color:#F8FAFC; font-size:16px;">${data.sender}</strong>
+                <span class="badge badge-red">${data.triageLevel || 'CRITICAL'}</span>
+              </div>
+              <p style="color:#CBD5E1; margin:0 0 8px 0; font-size:14px;">${data.message}</p>
+              ${photoPreview}
+              <div style="display:flex; justify-content:space-between; align-items:center; margin-top:8px;">
+                ${mapBtn}
+                <small style="color:#64748B; font-size:11px;">🕒 ${timeFormatted}</small>
+              </div>
+            `;
+            
+            container.prepend(card);
+          }
+        });
+      });
+    </script>
 </body>
 </html>
